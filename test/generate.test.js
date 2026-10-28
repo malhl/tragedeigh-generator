@@ -30,3 +30,12 @@ test('the exact input spelling is excluded', () => {
 test('no phonemes yields no results', () => {
   assert.deepEqual(generateTragedeighs('x', [], {}), []);
 });
+
+test('a word break keeps a space and capitalizes each word', () => {
+  // " " is the word-break token pronounce() inserts between words.
+  const results = generateTragedeighs('a b', ['AE', ' ', 'B'], { limit: 5 });
+  assert.ok(results.length > 0);
+  for (const r of results) {
+    assert.match(r.spelling, /^[A-Z][a-z]*( [A-Z][a-z]*)+$/);
+  }
+});

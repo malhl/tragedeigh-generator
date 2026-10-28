@@ -21,3 +21,14 @@ test('over-long input is truncated to MAX_NAME_LEN before processing', () => {
   assert.equal(result.source, 'soundout');
   assert.equal(result.phonemes.length, MAX_NAME_LEN);
 });
+
+test('multi-word names are pronounced word by word via the dictionary', () => {
+  const twoWords = {
+    lookup: (w) =>
+      ({ mary: ['M', 'EH', 'R', 'IY'], jane: ['JH', 'EY', 'N'] }[w.toLowerCase()] || null),
+  };
+  assert.deepEqual(pronounce('Mary Jane', twoWords), {
+    phonemes: ['M', 'EH', 'R', 'IY', ' ', 'JH', 'EY', 'N'],
+    source: 'dict',
+  });
+});

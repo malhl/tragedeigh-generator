@@ -1,4 +1,5 @@
 import { spellingsFor } from './arpabet.js';
+import { WORD_BREAK } from './pronounce.js';
 
 // A tiny binary max-heap keyed by numeric `score`.
 class MaxHeap {
@@ -41,10 +42,12 @@ class MaxHeap {
   }
 }
 
-function capitalize(word) {
-  if (!word) return word;
-  return word[0].toUpperCase() + word.slice(1).toLowerCase();
+function capitalizeWords(text) {
+  return text.replace(/\S+/g, (w) => w[0].toUpperCase() + w.slice(1).toLowerCase());
 }
+
+// A word break contributes a literal space and nothing to the score.
+const BREAK_OPTION = { spelling: ' ', weight: 0, sources: [] };
 
 /**
  * @typedef {{phoneme: string, spelling: string, weight: number, sources: string[]}} Part
@@ -67,7 +70,9 @@ export function generateTragedeighs(name, phonemes, opts = {}) {
   const limit = opts.limit ?? 100;
   if (!phonemes || phonemes.length === 0) return [];
 
-  const optionsPerPhoneme = phonemes.map((p) => spellingsFor(p));
+  const optionsPerPhoneme = phonemes.map((p) =>
+    p === WORD_BREAK ? [BREAK_OPTION] : spellingsFor(p),
+  );
   const target = String(name).toLowerCase();
 
   const scoreOf = (choice) =>
@@ -88,7 +93,7 @@ export function generateTragedeighs(name, phonemes, opts = {}) {
       const o = optionsPerPhoneme[p][idx];
       return { phoneme: phonemes[p].replace(/\d+$/, ''), spelling: o.spelling, weight: o.weight, sources: o.sources };
     });
-    const spelling = capitalize(parts.map((pt) => pt.spelling).join(''));
+    const spelling = capitalizeWords(parts.map((pt) => pt.spelling).join(''));
 
     if (spelling.toLowerCase() !== target && !seenSpellings.has(spelling)) {
       seenSpellings.add(spelling);
