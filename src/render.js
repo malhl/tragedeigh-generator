@@ -27,13 +27,7 @@ function renderPick(pick, index, active) {
 function markSourceWord(spelling, sources) {
   const needle = spelling.toLowerCase();
   const word = sources.find((w) => w.toLowerCase().includes(needle)) ?? sources[0] ?? '';
-  const at = word.toLowerCase().indexOf(needle);
-  if (at < 0) return escapeHtml(word);
-  return (
-    escapeHtml(word.slice(0, at)) +
-    `<u>${escapeHtml(word.slice(at, at + spelling.length))}</u>` +
-    escapeHtml(word.slice(at + spelling.length))
-  );
+  return underlineIn(word, spelling);
 }
 
 /**
@@ -66,12 +60,29 @@ export function renderGhotiPoster(name, pick) {
   );
 }
 
+// Underline the occurrence of `spelling` within `word`, e.g. "ph"+"phone"
+// -> "<u>ph</u>one". Returns the word escaped and unmarked if it isn't present.
+function underlineIn(word, spelling) {
+  const needle = String(spelling).toLowerCase();
+  const at = String(word).toLowerCase().indexOf(needle);
+  if (at < 0) return escapeHtml(word);
+  return (
+    escapeHtml(word.slice(0, at)) +
+    `<u>${escapeHtml(word.slice(at, at + spelling.length))}</u>` +
+    escapeHtml(word.slice(at + spelling.length))
+  );
+}
+
 function renderSound(sound) {
   const options = sound.options
     .map((o) => {
-      const words = o.sources.map(escapeHtml).join(', ');
-      const src = words ? `<span class="src">${words}</span>` : '';
-      return `<li class="option"><b>${escapeHtml(o.spelling)}</b>${src}</li>`;
+      const examples = o.sources.map((w) => underlineIn(w, o.spelling)).join(', ');
+      return (
+        `<li class="option">` +
+        `<span class="examples">${examples}</span>` +
+        `<span class="spell">${escapeHtml(o.spelling)}</span>` +
+        `</li>`
+      );
     })
     .join('');
   return (
@@ -111,5 +122,5 @@ export function renderTragedeighHTML({ name = '', picks = [], breakdown = [], se
     breakdown.map(renderSound).join('') +
     `</section>`;
 
-  return posterSection + picksSection + breakdownSection;
+  return breakdownSection + posterSection + picksSection;
 }

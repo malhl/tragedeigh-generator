@@ -24,11 +24,12 @@ test('each pick shows its spelling, score and a copy affordance', () => {
   assert.match(html, /copy/);
 });
 
-test('the breakdown shows one block per sound with spellings and source words', () => {
+test('the breakdown shows one block per sound: examples left, spelling right', () => {
   const html = renderTragedeighHTML({ picks: [], breakdown });
   assert.equal(html.split('class="sound"').length - 1, 2, 'one block per sound');
-  assert.match(html, /ph/);
-  assert.match(html, /phone, graph/);
+  assert.match(html, /class="spell">ph</, 'the spelling sits on the right');
+  assert.ok(html.includes('class="examples"'), 'examples column present');
+  assert.ok(html.includes('<u>ph</u>'), 'sound letters underlined in the example word');
 });
 
 const ghotiPick = {

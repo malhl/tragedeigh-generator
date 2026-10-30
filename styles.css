@@ -324,28 +324,47 @@ body {
 }
 
 .options {
+  flex: 1;
   list-style: none;
   margin: 0;
   padding: 0;
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem 0.75rem;
+  flex-direction: column;
+  gap: 0.35rem;
 }
 
 .option {
   display: flex;
-  flex-direction: column;
-  line-height: 1.25;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
-.option b {
-  font-size: 1.05rem;
-  color: var(--accent);
+.option + .option {
+  border-top: 1px solid var(--border);
+  padding-top: 0.35rem;
 }
 
-.option .src {
-  font-size: 0.72rem;
+.examples {
+  flex: 1;
+  font-size: 0.85rem;
   color: var(--muted);
+  word-break: break-word;
+}
+
+.examples u {
+  color: var(--accent);
+  font-weight: 700;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 2px;
+}
+
+.spell {
+  flex: 0 0 auto;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--accent);
+  white-space: nowrap;
 }
 
 .foot {
