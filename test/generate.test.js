@@ -1,6 +1,9 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { generateTragedeighs } from '../src/generate.js';
+import { generateTragedeighs, buildBreakdown } from '../src/generate.js';
+
+const soundDiff = (a, b) =>
+  a.parts.reduce((n, pt, i) => n + (pt.spelling !== b.parts[i].spelling ? 1 : 0), 0);
 
 test('results are ranked most-obscure first, capped, well-formed', () => {
   const results = generateTragedeighs('fish', ['F', 'IH', 'SH'], { limit: 5 });
@@ -29,6 +32,31 @@ test('the exact input spelling is excluded', () => {
 
 test('no phonemes yields no results', () => {
   assert.deepEqual(generateTragedeighs('x', [], {}), []);
+});
+
+test('minDiff keeps results at least that many sounds apart', () => {
+  const results = generateTragedeighs('fish', ['F', 'IH', 'SH'], { limit: 50, minDiff: 2 });
+  assert.ok(results.length >= 2, 'should still produce several diverse results');
+  for (let i = 0; i < results.length; i++) {
+    for (let j = i + 1; j < results.length; j++) {
+      assert.ok(soundDiff(results[i], results[j]) >= 2, 'every pair differs in >= 2 sounds');
+    }
+  }
+});
+
+test('minDiff never strands a single-sound name with zero results', () => {
+  // With one phoneme no two results can differ in 2 positions; the filter must
+  // relax to the number of sounds rather than reject everything.
+  const results = generateTragedeighs('sh', ['SH'], { limit: 100, minDiff: 2 });
+  assert.ok(results.length >= 2);
+});
+
+test('buildBreakdown lists each sound with its spelling options and sources', () => {
+  const breakdown = buildBreakdown(['F', ' ', 'SH']);
+  assert.equal(breakdown.length, 2, 'word-break slots are skipped');
+  assert.equal(breakdown[0].phoneme, 'F');
+  assert.ok(breakdown[0].options.some((o) => o.spelling === 'ph' && o.sources.includes('phone')));
+  assert.equal(breakdown[1].phoneme, 'SH');
 });
 
 test('a word break keeps a space and capitalizes each word', () => {
