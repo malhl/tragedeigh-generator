@@ -122,5 +122,10 @@ export function renderTragedeighHTML({ name = '', picks = [], breakdown = [], se
     breakdown.map(renderSound).join('') +
     `</section>`;
 
-  return breakdownSection + posterSection + picksSection;
+  return (
+    `<div class="layout">` +
+    `<div class="col col-left">${breakdownSection}</div>` +
+    `<div class="col col-right">${posterSection}${picksSection}</div>` +
+    `</div>`
+  );
 }

@@ -2,10 +2,10 @@
 // lives in the imported modules; this file only moves data between them and
 // the page.
 
-import { createDictionary } from './dictionary.js';
-import { pronounce } from './pronounce.js';
-import { generateTragedeighs, buildBreakdown } from './generate.js';
-import { renderTragedeighHTML } from './render.js';
+import { createDictionary } from './dictionary.js?v=20261029a';
+import { pronounce } from './pronounce.js?v=20261029a';
+import { generateTragedeighs, buildBreakdown } from './generate.js?v=20261029a';
+import { renderTragedeighHTML } from './render.js?v=20261029a';
 
 const form = document.getElementById('form');
 const input = document.getElementById('name');
@@ -13,7 +13,7 @@ const go = document.getElementById('go');
 const status = document.getElementById('status');
 const results = document.getElementById('results');
 
-const PICKS_LIMIT = 12;
+const PICKS_LIMIT = 10;
 const PICKS_MIN_DIFF = 2;
 let dict = null;
 let current = null; // { name, picks, breakdown } for the last search
@@ -50,7 +50,7 @@ function run(event) {
     limit: PICKS_LIMIT,
     minDiff: PICKS_MIN_DIFF,
   });
-  const breakdown = buildBreakdown(phonemes);
+  const breakdown = buildBreakdown(phonemes, name);
   current = { name, picks, breakdown };
   results.innerHTML = renderTragedeighHTML({ name, picks, breakdown, selected: 0 });
   status.textContent =

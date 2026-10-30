@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { generateTragedeighs, buildBreakdown } from '../src/generate.js';
+import { generateTragedeighs, buildBreakdown, inputGraphemes } from '../src/generate.js';
 
 const soundDiff = (a, b) =>
   a.parts.reduce((n, pt, i) => n + (pt.spelling !== b.parts[i].spelling ? 1 : 0), 0);
@@ -49,6 +49,29 @@ test('minDiff never strands a single-sound name with zero results', () => {
   // relax to the number of sounds rather than reject everything.
   const results = generateTragedeighs('sh', ['SH'], { limit: 100, minDiff: 2 });
   assert.ok(results.length >= 2);
+});
+
+test('inputGraphemes aligns the input spelling to each sound', () => {
+  assert.deepEqual(inputGraphemes('Thomas', ['T', 'AA', 'M', 'AH', 'S']), ['th', 'o', 'm', 'a', 's']);
+});
+
+test("the breakdown omits the spelling the input already uses for a sound", () => {
+  // Input "ph" spells the F sound as "ph", so "ph" shouldn't be offered.
+  const breakdown = buildBreakdown(['F'], 'ph');
+  const spellings = breakdown[0].options.map((o) => o.spelling);
+  assert.ok(!spellings.includes('ph'), "'ph' is how the input spells it");
+  assert.ok(spellings.includes('gh'), 'other spellings remain');
+});
+
+test('generation never respells a sound the way the input already did', () => {
+  const results = generateTragedeighs('ph', ['F'], { limit: 100 });
+  assert.ok(results.every((r) => r.parts[0].spelling !== 'ph'));
+});
+
+test('excluding the input spelling never empties a single-option sound', () => {
+  // L only has 'l'; excluding it would leave nothing, so it is kept.
+  const breakdown = buildBreakdown(['L'], 'l');
+  assert.deepEqual(breakdown[0].options.map((o) => o.spelling), ['l']);
 });
 
 test('buildBreakdown lists each sound with its spelling options and sources', () => {

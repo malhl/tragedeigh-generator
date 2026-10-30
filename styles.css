@@ -123,8 +123,26 @@ body {
   margin: 1.5rem 0 0.6rem;
 }
 
-.picks h2 {
-  margin-top: 0.5rem;
+/* Two columns on wider screens: breakdown left, poster + picks right. */
+.layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+
+@media (min-width: 720px) {
+  .layout {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+}
+
+.col {
+  min-width: 0;
+}
+
+.col > section:first-child > h2 {
+  margin-top: 0.25rem;
 }
 
 /* ---- Top picks ---- */

@@ -1,5 +1,5 @@
-import { spellingsFor } from './arpabet.js';
-import { WORD_BREAK } from './pronounce.js';
+import { spellingsFor } from './arpabet.js?v=20261029a';
+import { WORD_BREAK } from './pronounce.js?v=20261029a';
 
 // A tiny binary max-heap keyed by numeric `score`.
 class MaxHeap {
@@ -50,6 +50,46 @@ function capitalizeWords(text) {
 const BREAK_OPTION = { spelling: ' ', weight: 0, sources: [] };
 
 /**
+ * Greedily align the input's own spelling to its sounds, so we know how each
+ * sound is already written. Returns the grapheme per phoneme (null for word
+ * breaks), or all-null if the spelling can't be fully explained by the known
+ * spellings — in which case nothing is excluded.
+ * @param {string} name
+ * @param {string[]} phonemes
+ * @returns {Array<string|null>}
+ */
+export function inputGraphemes(name, phonemes) {
+  const list = phonemes || [];
+  const none = () => new Array(list.length).fill(null);
+  const text = String(name).toLowerCase();
+  const graphemes = none();
+  let pos = 0;
+  for (let i = 0; i < list.length; i++) {
+    if (list[i] === WORD_BREAK) {
+      while (pos < text.length && /\s/.test(text[pos])) pos += 1;
+      continue;
+    }
+    const candidates = spellingsFor(list[i])
+      .map((o) => o.spelling)
+      .sort((a, b) => b.length - a.length); // longest match first
+    const match = candidates.find((s) => text.startsWith(s, pos));
+    if (match === undefined) return none();
+    graphemes[i] = match;
+    pos += match.length;
+  }
+  return pos === text.length ? graphemes : none();
+}
+
+// A sound's spelling options, minus the way the input already spells it — but
+// never emptied (if that was the only option, keep it).
+function optionsFor(phoneme, excludeSpelling) {
+  const opts = spellingsFor(phoneme);
+  if (!excludeSpelling) return opts;
+  const filtered = opts.filter((o) => o.spelling !== excludeSpelling);
+  return filtered.length ? filtered : opts;
+}
+
+/**
  * @typedef {{phoneme: string, spelling: string, weight: number, sources: string[]}} Part
  * @typedef {{spelling: string, score: number, parts: Part[]}} Result
  */
@@ -70,8 +110,9 @@ export function generateTragedeighs(name, phonemes, opts = {}) {
   const limit = opts.limit ?? 100;
   if (!phonemes || phonemes.length === 0) return [];
 
-  const optionsPerPhoneme = phonemes.map((p) =>
-    p === WORD_BREAK ? [BREAK_OPTION] : spellingsFor(p),
+  const graphemes = inputGraphemes(name, phonemes);
+  const optionsPerPhoneme = phonemes.map((p, i) =>
+    p === WORD_BREAK ? [BREAK_OPTION] : optionsFor(p, graphemes[i]),
   );
   const target = String(name).toLowerCase();
 
@@ -139,8 +180,13 @@ export function generateTragedeighs(name, phonemes, opts = {}) {
  * @param {string[]} phonemes
  * @returns {Array<{phoneme: string, options: Array<{spelling: string, weight: number, sources: string[]}>}>}
  */
-export function buildBreakdown(phonemes) {
+export function buildBreakdown(phonemes, name = '') {
+  const graphemes = inputGraphemes(name, phonemes);
   return (phonemes || [])
-    .filter((p) => p !== WORD_BREAK)
-    .map((p) => ({ phoneme: p.replace(/\d+$/, ''), options: spellingsFor(p) }));
+    .map((p, i) => ({ p, i }))
+    .filter(({ p }) => p !== WORD_BREAK)
+    .map(({ p, i }) => ({
+      phoneme: p.replace(/\d+$/, ''),
+      options: optionsFor(p, graphemes[i]),
+    }));
 }
