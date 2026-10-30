@@ -39,3 +39,26 @@ test('every option is a nonempty spelling with a positive weight', () => {
 test('an unknown phoneme falls back to its own lowercased letters', () => {
   assert.deepEqual(spellingsFor('ZZ'), [{ spelling: 'zz', weight: 1, sources: [] }]);
 });
+
+test('no-op doubled letters are dropped (they do not change the sound)', () => {
+  // A doubled consonant sounds identical to the single letter, so it is not a
+  // real respelling — only padding that inflates the combinatorial space.
+  const spellingsOf = (p) => spellingsFor(p).map((o) => o.spelling);
+  assert.ok(!spellingsOf('L').includes('ll'), "L must not offer 'll'");
+  assert.ok(!spellingsOf('R').includes('rr'), "R must not offer 'rr'");
+  assert.ok(!spellingsOf('S').includes('ss'), "S must not offer 'ss'");
+  assert.ok(!spellingsOf('AA').includes('aa'), "AA must not offer 'aa'");
+  assert.ok(!spellingsOf('B').includes('bb'), "B must not offer 'bb'");
+});
+
+test('doubled letters that DO change the sound are kept', () => {
+  const spellingsOf = (p) => spellingsFor(p).map((o) => o.spelling);
+  // Spanish 'll' makes the "y" sound (quesadilla), which a single 'l' does not.
+  const y = spellingsFor('Y');
+  const ll = y.find((o) => o.spelling === 'll');
+  assert.ok(ll, "Y must offer 'll'");
+  assert.ok(ll.sources.includes('quesadilla'));
+  // Vowel teams that change the sound stay (ee != a lone e, oo != a lone o).
+  assert.ok(spellingsOf('IY').includes('ee'), "IY must keep 'ee'");
+  assert.ok(spellingsOf('UW').includes('oo'), "UW must keep 'oo'");
+});
