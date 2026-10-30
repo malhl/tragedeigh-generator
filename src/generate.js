@@ -1,5 +1,5 @@
-import { spellingsFor } from './arpabet.js?v=20261029a';
-import { WORD_BREAK } from './pronounce.js?v=20261029a';
+import { spellingsFor } from './arpabet.js?v=20261029b';
+import { WORD_BREAK } from './pronounce.js?v=20261029b';
 
 // A tiny binary max-heap keyed by numeric `score`.
 class MaxHeap {

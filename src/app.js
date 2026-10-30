@@ -2,10 +2,10 @@
 // lives in the imported modules; this file only moves data between them and
 // the page.
 
-import { createDictionary } from './dictionary.js?v=20261029a';
-import { pronounce } from './pronounce.js?v=20261029a';
-import { generateTragedeighs, buildBreakdown } from './generate.js?v=20261029a';
-import { renderTragedeighHTML } from './render.js?v=20261029a';
+import { createDictionary } from './dictionary.js?v=20261029b';
+import { pronounce } from './pronounce.js?v=20261029b';
+import { generateTragedeighs, buildBreakdown } from './generate.js?v=20261029b';
+import { renderTragedeighHTML } from './render.js?v=20261029b';
 
 const form = document.getElementById('form');
 const input = document.getElementById('name');

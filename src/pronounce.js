@@ -1,4 +1,4 @@
-import { soundOut } from './g2p.js?v=20261029a';
+import { soundOut } from './g2p.js?v=20261029b';
 
 // Longest name we'll process. Guards the generator against combinatorial
 // blow-up on absurd input.
