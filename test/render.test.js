@@ -1,33 +1,44 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { renderResultsHTML } from '../src/render.js';
+import { renderTragedeighHTML } from '../src/render.js';
 
-const mkResult = (spelling, score) => ({
+const pick = (spelling, score) => ({
   spelling,
   score,
-  parts: [{ phoneme: 'F', spelling: 'ph', weight: 3, sources: ['phone', 'graph'] }],
+  parts: [{ phoneme: 'F', spelling: 'ph', weight: 3, sources: ['phone'] }],
 });
 
-const countOccurrences = (haystack, needle) => haystack.split(needle).length - 1;
+const breakdown = [
+  { phoneme: 'F', options: [{ spelling: 'ph', weight: 3, sources: ['phone', 'graph'] }] },
+  { phoneme: 'SH', options: [{ spelling: 'sh', weight: 1, sources: ['ship'] }] },
+];
 
-test('empty results render an empty state', () => {
-  assert.match(renderResultsHTML([]), /no-results/);
+test('no sounds renders an empty state', () => {
+  assert.match(renderTragedeighHTML({ picks: [], breakdown: [] }), /no-results/);
 });
 
-test('provenance is shown for the top 5 rows only', () => {
-  const results = Array.from({ length: 7 }, (_, i) => mkResult('Name' + i, 20 - i));
-  const html = renderResultsHTML(results);
-  assert.equal(countOccurrences(html, 'class="provenance"'), 5);
-});
-
-test('interpolated text is HTML-escaped', () => {
-  const html = renderResultsHTML([mkResult('<script>x', 9)]);
-  assert.ok(!html.includes('<script>x'), 'raw markup must not survive');
-  assert.ok(html.includes('&lt;script&gt;x'), 'it must appear escaped');
-});
-
-test('each row shows its score and a copy affordance', () => {
-  const html = renderResultsHTML([mkResult('Pheesh', 42)]);
+test('each pick shows its spelling, score and a copy affordance', () => {
+  const html = renderTragedeighHTML({ picks: [pick('Pheesh', 42)], breakdown });
+  assert.match(html, /Pheesh/);
   assert.match(html, /42/);
   assert.match(html, /copy/);
+});
+
+test('the breakdown shows one block per sound with spellings and source words', () => {
+  const html = renderTragedeighHTML({ picks: [], breakdown });
+  assert.equal(html.split('class="sound"').length - 1, 2, 'one block per sound');
+  assert.match(html, /ph/);
+  assert.match(html, /phone, graph/);
+});
+
+test('interpolated text is HTML-escaped in both sections', () => {
+  const html = renderTragedeighHTML({
+    picks: [pick('<script>x', 9)],
+    breakdown: [{ phoneme: 'F', options: [{ spelling: '<x>', weight: 1, sources: ['a<y'] }] }],
+  });
+  assert.ok(!html.includes('<script>x'), 'pick data markup must not survive');
+  assert.ok(html.includes('&lt;script&gt;x'));
+  assert.ok(!html.includes('<x>'), 'breakdown spelling markup must not survive');
+  assert.ok(!html.includes('a<y'), 'breakdown source markup must not survive');
+  assert.ok(html.includes('&lt;x&gt;'));
 });

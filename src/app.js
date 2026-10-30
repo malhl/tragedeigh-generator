@@ -4,8 +4,8 @@
 
 import { createDictionary } from './dictionary.js';
 import { pronounce } from './pronounce.js';
-import { generateTragedeighs } from './generate.js';
-import { renderResultsHTML } from './render.js';
+import { generateTragedeighs, buildBreakdown } from './generate.js';
+import { renderTragedeighHTML } from './render.js';
 
 const form = document.getElementById('form');
 const input = document.getElementById('name');
@@ -13,7 +13,8 @@ const go = document.getElementById('go');
 const status = document.getElementById('status');
 const results = document.getElementById('results');
 
-const RESULT_LIMIT = 100;
+const PICKS_LIMIT = 12;
+const PICKS_MIN_DIFF = 2;
 let dict = null;
 
 async function init() {
@@ -37,18 +38,22 @@ function run(event) {
 
   const name = input.value.trim();
   if (!name) {
-    results.innerHTML = renderResultsHTML([]);
+    results.innerHTML = renderTragedeighHTML({ picks: [], breakdown: [] });
     status.textContent = '';
     return;
   }
 
   const { phonemes, source } = pronounce(name, dict);
-  const list = generateTragedeighs(name, phonemes, { limit: RESULT_LIMIT });
-  results.innerHTML = renderResultsHTML(list);
+  const picks = generateTragedeighs(name, phonemes, {
+    limit: PICKS_LIMIT,
+    minDiff: PICKS_MIN_DIFF,
+  });
+  const breakdown = buildBreakdown(phonemes);
+  results.innerHTML = renderTragedeighHTML({ picks, breakdown });
   status.textContent =
-    list.length === 0
+    breakdown.length === 0
       ? `Couldn't sound out "${name}".`
-      : `${list.length} tragedeigh${list.length === 1 ? '' : 's'} for "${name}" ` +
+      : `${breakdown.length} sound${breakdown.length === 1 ? '' : 's'} in "${name}" ` +
         `(${source === 'dict' ? 'from the dictionary' : 'sounded out'}).`;
 }
 
