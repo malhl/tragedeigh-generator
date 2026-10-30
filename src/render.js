@@ -10,14 +10,59 @@ function escapeHtml(value) {
     .replace(/'/g, '&#39;');
 }
 
-function renderPick(pick) {
+function renderPick(pick, index, active) {
   const spelling = escapeHtml(pick.spelling);
   return (
-    `<li class="result">` +
+    `<li class="result${active ? ' active' : ''}" data-index="${index}">` +
     `<span class="spelling">${spelling}</span>` +
     `<span class="score" title="obscurity score">${escapeHtml(pick.score)}</span>` +
     `<button class="copy" type="button" data-spelling="${spelling}">copy</button>` +
     `</li>`
+  );
+}
+
+// Render a source word with the letters that make the sound underlined, e.g.
+// spelling "ph" + "phone" -> "<u>ph</u>one". Picks the first source that
+// actually contains the spelling; if none do, shows the first word plain.
+function markSourceWord(spelling, sources) {
+  const needle = spelling.toLowerCase();
+  const word = sources.find((w) => w.toLowerCase().includes(needle)) ?? sources[0] ?? '';
+  const at = word.toLowerCase().indexOf(needle);
+  if (at < 0) return escapeHtml(word);
+  return (
+    escapeHtml(word.slice(0, at)) +
+    `<u>${escapeHtml(word.slice(at, at + spelling.length))}</u>` +
+    escapeHtml(word.slice(at + spelling.length))
+  );
+}
+
+/**
+ * Render one chosen respelling as a ghoti-style poster: the original name in
+ * brackets, then a tile per sound (big spelling, a bracket, and a source word
+ * with the sound-letters underlined). Word breaks render as gaps.
+ * @param {string} name
+ * @param {import('./generate.js').Result} pick
+ * @returns {string}
+ */
+export function renderGhotiPoster(name, pick) {
+  const tiles = pick.parts
+    .map((part) => {
+      if (part.spelling === ' ') return `<span class="ghoti-gap"></span>`;
+      return (
+        `<div class="ghoti-tile">` +
+        `<span class="ghoti-big">${escapeHtml(part.spelling)}</span>` +
+        `<span class="ghoti-bracket"></span>` +
+        `<span class="ghoti-word">${markSourceWord(part.spelling, part.sources)}</span>` +
+        `</div>`
+      );
+    })
+    .join('');
+  return (
+    `<figure class="ghoti">` +
+    `<figcaption class="ghoti-name">[ ${escapeHtml(name)} ]</figcaption>` +
+    `<div class="ghoti-row">${tiles}</div>` +
+    `<figcaption class="ghoti-result">${escapeHtml(pick.spelling)}</figcaption>` +
+    `</figure>`
   );
 }
 
@@ -42,21 +87,29 @@ function renderSound(sound) {
  *           breakdown: Array<{phoneme: string, options: Array<{spelling: string, sources: string[]}>}> }} model
  * @returns {string}
  */
-export function renderTragedeighHTML({ picks, breakdown }) {
+export function renderTragedeighHTML({ name = '', picks = [], breakdown = [], selected = 0 }) {
   if (!breakdown || breakdown.length === 0) {
     return `<p class="no-results">No tragedeighs yet — type a name above.</p>`;
   }
 
-  const picksSection =
-    picks && picks.length > 0
-      ? `<section class="picks"><h2>Top picks</h2>` +
-        `<ol class="results">${picks.map(renderPick).join('')}</ol></section>`
-      : '';
+  const hasPicks = picks && picks.length > 0;
+  const selectedIndex = Math.min(Math.max(selected, 0), hasPicks ? picks.length - 1 : 0);
+
+  const posterSection = hasPicks
+    ? `<section class="poster-area">${renderGhotiPoster(name, picks[selectedIndex])}</section>`
+    : '';
+
+  const picksSection = hasPicks
+    ? `<section class="picks"><h2>Top picks <span class="hint">(tap one to see it)</span></h2>` +
+      `<ol class="results">${picks
+        .map((p, i) => renderPick(p, i, i === selectedIndex))
+        .join('')}</ol></section>`
+    : '';
 
   const breakdownSection =
     `<section class="breakdown"><h2>Every sound, and how to spell it</h2>` +
     breakdown.map(renderSound).join('') +
     `</section>`;
 
-  return picksSection + breakdownSection;
+  return posterSection + picksSection + breakdownSection;
 }

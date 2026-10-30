@@ -16,6 +16,7 @@ const results = document.getElementById('results');
 const PICKS_LIMIT = 12;
 const PICKS_MIN_DIFF = 2;
 let dict = null;
+let current = null; // { name, picks, breakdown } for the last search
 
 async function init() {
   try {
@@ -38,6 +39,7 @@ function run(event) {
 
   const name = input.value.trim();
   if (!name) {
+    current = null;
     results.innerHTML = renderTragedeighHTML({ picks: [], breakdown: [] });
     status.textContent = '';
     return;
@@ -49,7 +51,8 @@ function run(event) {
     minDiff: PICKS_MIN_DIFF,
   });
   const breakdown = buildBreakdown(phonemes);
-  results.innerHTML = renderTragedeighHTML({ picks, breakdown });
+  current = { name, picks, breakdown };
+  results.innerHTML = renderTragedeighHTML({ name, picks, breakdown, selected: 0 });
   status.textContent =
     breakdown.length === 0
       ? `Couldn't sound out "${name}".`
@@ -59,18 +62,31 @@ function run(event) {
 
 function onResultsClick(event) {
   const button = event.target.closest('.copy');
-  if (!button) return;
-  const spelling = button.dataset.spelling;
-  navigator.clipboard?.writeText(spelling).then(
-    () => {
-      button.textContent = 'copied!';
-      setTimeout(() => (button.textContent = 'copy'), 1200);
-    },
-    () => {
-      button.textContent = 'failed';
-      setTimeout(() => (button.textContent = 'copy'), 1200);
-    },
-  );
+  if (button) {
+    const spelling = button.dataset.spelling;
+    const done = navigator.clipboard?.writeText(spelling);
+    if (done && typeof done.then === 'function') {
+      done.then(
+        () => flash(button, 'copied!'),
+        () => flash(button, 'failed'),
+      );
+    } else {
+      flash(button, 'copy unavailable');
+    }
+    return;
+  }
+
+  // Clicking a pick row re-renders the ghoti poster for that pick.
+  const row = event.target.closest('.result');
+  if (row && current) {
+    const selected = Number(row.dataset.index);
+    results.innerHTML = renderTragedeighHTML({ ...current, selected });
+  }
+}
+
+function flash(button, text) {
+  button.textContent = text;
+  setTimeout(() => (button.textContent = 'copy'), 1200);
 }
 
 form.addEventListener('submit', run);

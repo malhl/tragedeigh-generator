@@ -189,6 +189,110 @@ body {
   color: var(--accent);
 }
 
+.result {
+  cursor: pointer;
+}
+
+.result.active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent) inset;
+}
+
+.hint {
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+/* ---- Ghoti poster (the "just like the picture" view) ---- */
+.poster-area {
+  margin-top: 0.5rem;
+}
+
+.ghoti {
+  margin: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0.8rem;
+  padding: 1.3rem 0.9rem 1.1rem;
+  box-shadow: var(--shadow);
+  overflow-x: auto;
+}
+
+.ghoti-name {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-size: 0.8rem;
+  text-align: center;
+  margin-bottom: 1.1rem;
+}
+
+.ghoti-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.2rem;
+}
+
+.ghoti-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 0.55rem;
+}
+
+.ghoti-tile + .ghoti-tile {
+  border-left: 1px solid var(--border);
+}
+
+.ghoti-big {
+  font-size: clamp(1.7rem, 7vw, 2.7rem);
+  font-weight: 800;
+  line-height: 1;
+  color: var(--ink);
+}
+
+.ghoti-bracket {
+  width: 75%;
+  min-width: 1.1rem;
+  height: 0.5rem;
+  margin: 0.4rem 0 0.35rem;
+  border: 2px solid var(--accent);
+  border-top: none;
+  border-radius: 0 0 0.35rem 0.35rem;
+  opacity: 0.8;
+}
+
+.ghoti-word {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.ghoti-word u {
+  color: var(--accent);
+  font-weight: 700;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 2px;
+}
+
+.ghoti-gap {
+  width: 1.4rem;
+}
+
+.ghoti-result {
+  margin-top: 1.1rem;
+  text-align: center;
+  font-size: clamp(1.3rem, 5vw, 1.7rem);
+  font-weight: 800;
+  color: var(--accent);
+  word-break: break-word;
+}
+
 /* ---- Per-sound breakdown (ghoti view) ---- */
 .breakdown {
   display: grid;
