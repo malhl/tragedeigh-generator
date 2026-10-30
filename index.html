@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tragedeigh Generator</title>
+    <meta
+      name="description"
+      content="Type a name and get up to 100 cursed-but-legal English respellings, ranked most unhinged first."
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <header class="hero">
+        <h1>Tragedeigh Generator</h1>
+        <p class="tagline">
+          Type a name. Get back the most cursed — but technically legal — ways to spell it.
+        </p>
+      </header>
+
+      <form id="form" class="form" autocomplete="off">
+        <input
+          id="name"
+          class="name-input"
+          type="text"
+          name="name"
+          placeholder="e.g. Kayleigh"
+          maxlength="30"
+          aria-label="Name to tragedeigh"
+          disabled
+        />
+        <button id="go" class="go" type="submit" disabled>Tragedeigh it</button>
+      </form>
+
+      <p id="status" class="status" role="status">Loading dictionary…</p>
+
+      <section id="results" class="results-area" aria-live="polite">
+        <p class="no-results">No tragedeighs yet — type a name above.</p>
+      </section>
+
+      <footer class="foot">
+        <p>
+          Sounds come from the CMU Pronouncing Dictionary, with a sound-it-out
+          fallback for names it doesn't know. Score = how obscure the spellings are.
+        </p>
+      </footer>
+    </main>
+
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>

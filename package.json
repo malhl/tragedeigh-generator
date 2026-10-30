@@ -1,0 +1,10 @@
+{
+  "name": "tragedeigh-generator",
+  "version": "1.0.0",
+  "description": "Turn any name into up to 100 cursed respellings, ranked most-obscure first.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "node --test"
+  }
+}
