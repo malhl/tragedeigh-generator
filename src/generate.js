@@ -75,6 +75,21 @@ export function generateTragedeighs(name, phonemes, opts = {}) {
   );
   const target = String(name).toLowerCase();
 
+  // Diversity: every kept result must differ from every other kept result in
+  // at least `minDiff` sounds, so the list isn't one base name with a single
+  // sound nudged. Relax to the number of real sounds so short names (which
+  // can't differ in 2 positions) still return results.
+  const soundCount = phonemes.filter((p) => p !== WORD_BREAK).length;
+  const minDiff = Math.max(1, Math.min(opts.minDiff ?? 1, soundCount));
+  const differsEnough = (parts) =>
+    results.every((kept) => {
+      let diff = 0;
+      for (let i = 0; i < parts.length; i++) {
+        if (parts[i].spelling !== kept.parts[i].spelling) diff += 1;
+      }
+      return diff >= minDiff;
+    });
+
   const scoreOf = (choice) =>
     choice.reduce((sum, idx, p) => sum + optionsPerPhoneme[p][idx].weight, 0);
 
@@ -95,7 +110,7 @@ export function generateTragedeighs(name, phonemes, opts = {}) {
     });
     const spelling = capitalizeWords(parts.map((pt) => pt.spelling).join(''));
 
-    if (spelling.toLowerCase() !== target && !seenSpellings.has(spelling)) {
+    if (spelling.toLowerCase() !== target && !seenSpellings.has(spelling) && differsEnough(parts)) {
       seenSpellings.add(spelling);
       results.push({ spelling, score, parts });
     }
@@ -116,4 +131,16 @@ export function generateTragedeighs(name, phonemes, opts = {}) {
   }
 
   return results;
+}
+
+/**
+ * The ghoti-style per-sound menu: one entry per real sound (word breaks
+ * skipped), each with all the ways to spell it and the words that justify them.
+ * @param {string[]} phonemes
+ * @returns {Array<{phoneme: string, options: Array<{spelling: string, weight: number, sources: string[]}>}>}
+ */
+export function buildBreakdown(phonemes) {
+  return (phonemes || [])
+    .filter((p) => p !== WORD_BREAK)
+    .map((p) => ({ phoneme: p.replace(/\d+$/, ''), options: spellingsFor(p) }));
 }

@@ -9,7 +9,6 @@ export const SPELLINGS = {
     { spelling: 'o', weight: 1, sources: ['hot', 'top'] },
     { spelling: 'a', weight: 1, sources: ['father', 'spa'] },
     { spelling: 'ah', weight: 3, sources: ['bah', 'hurrah'] },
-    { spelling: 'aa', weight: 6, sources: ['baa', 'bazaar'] },
   ],
   AE: [
     { spelling: 'a', weight: 1, sources: ['cat', 'man'] },
@@ -130,7 +129,6 @@ export const SPELLINGS = {
   // ---- Consonants ----
   B: [
     { spelling: 'b', weight: 1, sources: ['bat', 'cab'] },
-    { spelling: 'bb', weight: 2, sources: ['rabbit', 'hobby'] },
   ],
   CH: [
     { spelling: 'ch', weight: 1, sources: ['chip', 'much'] },
@@ -140,20 +138,17 @@ export const SPELLINGS = {
   ],
   D: [
     { spelling: 'd', weight: 1, sources: ['dog', 'sad'] },
-    { spelling: 'dd', weight: 2, sources: ['ladder', 'add'] },
   ],
   DH: [
     { spelling: 'th', weight: 1, sources: ['this', 'that'] },
   ],
   F: [
     { spelling: 'f', weight: 1, sources: ['fan', 'leaf'] },
-    { spelling: 'ff', weight: 2, sources: ['off', 'cliff'] },
     { spelling: 'ph', weight: 3, sources: ['phone', 'graph'] },
     { spelling: 'gh', weight: 6, sources: ['laugh', 'cough'] },
   ],
   G: [
     { spelling: 'g', weight: 1, sources: ['go', 'bag'] },
-    { spelling: 'gg', weight: 2, sources: ['egg', 'bigger'] },
     { spelling: 'gu', weight: 4, sources: ['guard', 'guest'] },
     { spelling: 'gh', weight: 5, sources: ['ghost', 'ghoul'] },
   ],
@@ -172,24 +167,20 @@ export const SPELLINGS = {
     { spelling: 'c', weight: 1, sources: ['cat', 'cup'] },
     { spelling: 'k', weight: 1, sources: ['kit', 'ask'] },
     { spelling: 'ck', weight: 2, sources: ['back', 'duck'] },
-    { spelling: 'cc', weight: 3, sources: ['account', 'occur'] },
     { spelling: 'ch', weight: 4, sources: ['school', 'echo'] },
     { spelling: 'q', weight: 5, sources: ['quay'] },
     { spelling: 'que', weight: 6, sources: ['plaque', 'opaque'] },
   ],
   L: [
     { spelling: 'l', weight: 1, sources: ['lip', 'pal'] },
-    { spelling: 'll', weight: 2, sources: ['ball', 'tell'] },
   ],
   M: [
     { spelling: 'm', weight: 1, sources: ['man', 'ham'] },
-    { spelling: 'mm', weight: 2, sources: ['hammer', 'summer'] },
     { spelling: 'mb', weight: 4, sources: ['lamb', 'thumb'] },
     { spelling: 'mn', weight: 6, sources: ['autumn', 'column'] },
   ],
   N: [
     { spelling: 'n', weight: 1, sources: ['no', 'pin'] },
-    { spelling: 'nn', weight: 2, sources: ['dinner', 'funny'] },
     { spelling: 'kn', weight: 4, sources: ['knee', 'knife'] },
     { spelling: 'gn', weight: 5, sources: ['gnat', 'sign'] },
     { spelling: 'pn', weight: 7, sources: ['pneumonia'] },
@@ -201,17 +192,14 @@ export const SPELLINGS = {
   ],
   P: [
     { spelling: 'p', weight: 1, sources: ['pen', 'map'] },
-    { spelling: 'pp', weight: 2, sources: ['apple', 'happy'] },
   ],
   R: [
     { spelling: 'r', weight: 1, sources: ['run', 'car'] },
-    { spelling: 'rr', weight: 2, sources: ['carry', 'sorry'] },
     { spelling: 'wr', weight: 4, sources: ['write', 'wrong'] },
     { spelling: 'rh', weight: 6, sources: ['rhyme', 'rhythm'] },
   ],
   S: [
     { spelling: 's', weight: 1, sources: ['sun', 'bus'] },
-    { spelling: 'ss', weight: 2, sources: ['mess', 'class'] },
     { spelling: 'c', weight: 2, sources: ['city', 'ice'] },
     { spelling: 'sc', weight: 4, sources: ['scene', 'science'] },
     { spelling: 'ps', weight: 7, sources: ['psalm', 'psychology'] },
@@ -225,7 +213,6 @@ export const SPELLINGS = {
   ],
   T: [
     { spelling: 't', weight: 1, sources: ['top', 'cat'] },
-    { spelling: 'tt', weight: 2, sources: ['butter', 'little'] },
     { spelling: 'ed', weight: 4, sources: ['walked', 'jumped'] },
     { spelling: 'th', weight: 6, sources: ['thyme', 'Thomas'] },
     { spelling: 'bt', weight: 7, sources: ['debt', 'doubt'] },
@@ -246,12 +233,12 @@ export const SPELLINGS = {
   Y: [
     { spelling: 'y', weight: 1, sources: ['yes', 'yard'] },
     { spelling: 'i', weight: 4, sources: ['onion', 'union'] },
+    { spelling: 'll', weight: 6, sources: ['quesadilla', 'tortilla'] },
     { spelling: 'j', weight: 7, sources: ['hallelujah', 'fjord'] },
   ],
   Z: [
     { spelling: 's', weight: 1, sources: ['is', 'was'] },
     { spelling: 'z', weight: 1, sources: ['zoo', 'zip'] },
-    { spelling: 'zz', weight: 2, sources: ['buzz', 'jazz'] },
     { spelling: 'se', weight: 3, sources: ['rose', 'cheese'] },
     { spelling: 'x', weight: 5, sources: ['xylophone'] },
   ],

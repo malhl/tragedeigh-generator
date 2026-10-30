@@ -1,7 +1,5 @@
-// Pure rendering: Result[] -> HTML string. No DOM access, so it's testable
-// in Node. app.js injects the returned string into the page.
-
-const PROVENANCE_ROWS = 5;
+// Pure rendering: the engine's output -> an HTML string. No DOM access, so it's
+// testable in Node. app.js injects the returned string into the page.
 
 function escapeHtml(value) {
   return String(value)
@@ -12,41 +10,53 @@ function escapeHtml(value) {
     .replace(/'/g, '&#39;');
 }
 
-function renderProvenance(parts) {
-  const items = parts
-    .filter((p) => p.sources && p.sources.length > 0)
-    .map((p) => {
-      const words = p.sources.map(escapeHtml).join(', ');
-      return `<li><b>${escapeHtml(p.spelling)}</b> — like ${words}</li>`;
-    })
-    .join('');
-  if (!items) return '';
-  return `<ul class="provenance">${items}</ul>`;
-}
-
-function renderRow(result, rank) {
-  const spelling = escapeHtml(result.spelling);
-  const provenance = rank < PROVENANCE_ROWS ? renderProvenance(result.parts) : '';
+function renderPick(pick) {
+  const spelling = escapeHtml(pick.spelling);
   return (
     `<li class="result">` +
-    `<div class="result-head">` +
     `<span class="spelling">${spelling}</span>` +
-    `<span class="score" title="obscurity score">${escapeHtml(result.score)}</span>` +
+    `<span class="score" title="obscurity score">${escapeHtml(pick.score)}</span>` +
     `<button class="copy" type="button" data-spelling="${spelling}">copy</button>` +
-    `</div>` +
-    provenance +
     `</li>`
   );
 }
 
+function renderSound(sound) {
+  const options = sound.options
+    .map((o) => {
+      const words = o.sources.map(escapeHtml).join(', ');
+      const src = words ? `<span class="src">${words}</span>` : '';
+      return `<li class="option"><b>${escapeHtml(o.spelling)}</b>${src}</li>`;
+    })
+    .join('');
+  return (
+    `<div class="sound">` +
+    `<span class="phoneme">${escapeHtml(sound.phoneme)}</span>` +
+    `<ul class="options">${options}</ul>` +
+    `</div>`
+  );
+}
+
 /**
- * @param {import('./generate.js').Result[]} results
+ * @param {{ picks: import('./generate.js').Result[],
+ *           breakdown: Array<{phoneme: string, options: Array<{spelling: string, sources: string[]}>}> }} model
  * @returns {string}
  */
-export function renderResultsHTML(results) {
-  if (!results || results.length === 0) {
+export function renderTragedeighHTML({ picks, breakdown }) {
+  if (!breakdown || breakdown.length === 0) {
     return `<p class="no-results">No tragedeighs yet — type a name above.</p>`;
   }
-  const rows = results.map((r, i) => renderRow(r, i)).join('');
-  return `<ol class="results">${rows}</ol>`;
+
+  const picksSection =
+    picks && picks.length > 0
+      ? `<section class="picks"><h2>Top picks</h2>` +
+        `<ol class="results">${picks.map(renderPick).join('')}</ol></section>`
+      : '';
+
+  const breakdownSection =
+    `<section class="breakdown"><h2>Every sound, and how to spell it</h2>` +
+    breakdown.map(renderSound).join('') +
+    `</section>`;
+
+  return picksSection + breakdownSection;
 }
